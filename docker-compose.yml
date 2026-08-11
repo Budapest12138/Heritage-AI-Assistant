@@ -1,0 +1,95 @@
+services:
+  # ========= 前端 =========
+  frontend:
+    image: crpi-emrvwmzlqagc37dl.cn-hangzhou.personal.cr.aliyuncs.com/zayzeng/xiwen-frontend:latest
+    container_name: xiwen-frontend
+    ports:
+      - "8088:80"
+    depends_on:
+      - heritage-backend
+      - uls-backend
+    networks:
+      - xiwen-net
+    restart: unless-stopped
+
+  # ========= AI 后端 =========
+  heritage-backend:
+    image: crpi-emrvwmzlqagc37dl.cn-hangzhou.personal.cr.aliyuncs.com/zayzeng/xiwen-backend:latest
+    container_name: xiwen-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - DASHSCOPE_API_KEY=${DASHSCOPE_API_KEY}
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_SERVLET_MULTIPART_MAX-FILE-SIZE=20MB
+      - SPRING_SERVLET_MULTIPART_MAX-REQUEST-SIZE=20MB
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - xiwen-net
+    restart: unless-stopped
+
+  # ========= 登录后端 (ULS) =========
+  uls-backend:
+    image: crpi-emrvwmzlqagc37dl.cn-hangzhou.personal.cr.aliyuncs.com/zayzeng/xiwen-uls:latest
+    container_name: xiwen-uls
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/uls_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=${MYSQL_USER:-root}
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD:-Zz2005613}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - xiwen-net
+    restart: unless-stopped
+
+  # ========= Redis (向量存储) =========
+  redis:
+    image: redis/redis-stack:latest
+    container_name: xiwen-redis
+    ports:
+      - "6379:6379"
+      - "8001:8001"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - xiwen-net
+    restart: unless-stopped
+
+  # ========= MySQL (用户数据) =========
+  mysql:
+    image: mysql:8.4
+    container_name: xiwen-mysql
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD:-Zz2005613}
+      - MYSQL_DATABASE=uls_db
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - xiwen-net
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+  mysql-data:
+
+networks:
+  xiwen-net:
+    driver: bridge
