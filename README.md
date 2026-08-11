@@ -29,16 +29,15 @@ graph LR
 
 ##  🚀 技术栈
 
-```mermaid
-层级	                  技术选型
-前端	                  Vue 3 + Element Plus
-后端	                  Spring Boot 3
-数据库      	         MySQL 8.4 + Redis 7
-AI 模型	         阿里云百炼（DashScope）通义千问
-检索增强	         RAG（文档切片 + 向量检索）
-容器化	         Docker + Docker Compose
-认证方式  	         JWT（无状态登录）
-```
+| 层级 | 技术选型 |
+| :--- | :--- |
+| 前端 | Vue 3 + Element Plus |
+| 后端 | Spring Boot 3 |
+| 数据库 | MySQL 8.4 + Redis 7 |
+| AI 模型 | 阿里云百炼（DashScope）通义千问 |
+| 检索增强 | RAG（文档切片 + 向量检索） |
+| 容器化 | Docker + Docker Compose |
+| 认证方式 | JWT（无状态登录） |
 
 ---
 
