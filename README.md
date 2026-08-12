@@ -12,7 +12,7 @@
 ---
 
 ## 📸 效果预览 
-📹 [点击查看功能演示](./智能体演示.mp4)
+📹 [点击观看功能演示视频]([https://raw.githubusercontent.com/Budapest12138/Heritage-AI-Assistant/refs/heads/main/%E6%99%BA%E8%83%BD%E4%BD%93%E6%BC%94%E7%A4%BA.mp4])
 
 ---
 
